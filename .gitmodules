@@ -1,0 +1,3 @@
+[submodule "External/NEWT0"]
+	path = External/NEWT0
+	url = https://github.com/pablomarx/NEWT0-1.git

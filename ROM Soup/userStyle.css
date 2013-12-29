@@ -1,0 +1,13 @@
+div[id="toolbar"], div[id="drawer-status-bar"] , div[id="console-filter"], div[id="main"] {
+  display: none !important;
+}
+
+#drawer {
+  background-image: none !important;
+  height: 100% !important;
+}
+
+#console-messages {
+  margin-top: 0px !important;
+  bottom: 0px !important;
+} 

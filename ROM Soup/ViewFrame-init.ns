@@ -1,0 +1,3 @@
+decompiler.oneliner := GetRoot().|ViewFrame:JRH|.oneliner;
+decompiler.StdObjDesc := GetRoot().|ViewFrame:JRH|.StdObjDesc;
+decompiler.weakling := nil;
