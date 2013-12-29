@@ -8,16 +8,16 @@ Features
 
 ### Interactive NEWT/0 Console
 
-![ROM Soup Console Screenshot](http://i.imgur.com/w3hb37t.png)
+![ROM Soup Console Screenshot](http://i.imgur.com/JV9NV4k.png)
 
 
 ### Bitmap + PICT Browser
 
-![ROM Soup Image Browser Screenshot](http://i.imgur.com/W5jzqzi.png)
+![ROM Soup Image Browser Screenshot](http://i.imgur.com/4T70gsX.png)
 
 
 ### Sound Browser
 
-![ROM Soup Sound Browser Screenshot](http://i.imgur.com/C4Oxz5c.png)
+![ROM Soup Sound Browser Screenshot](http://i.imgur.com/pGO62KQ.png)
 
 
