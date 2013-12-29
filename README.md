@@ -5,12 +5,21 @@ Tool for exploring the ROM Soup from Newton ROM images.  This reads all of the N
 
 Download the app from (https://www.dropbox.com/s/s3qubbau9pp5cgz/ROM%20Soup.zip).  If you build from source, remember to initialize&update the git submodules.
 
+Need a ROM image? Try:
+
+- [Newt J1 Armistice v629AS.00](http://www.unna.org/incoming/Newt%20J1Armistice%20image.zip)
+- [Newton Notepad 1.0b1](http://www.unna.org/incoming/notepad-1.0b1.rom.gz)
+- [Original MessagePad 1.3 (414059)](http://www.unna.org/incoming/omp-1.3-414059.rom.gz)
+
 Features
 --------
 
 ### Interactive NEWT/0 Console
 
 ![ROM Soup Console Screenshot](http://i.imgur.com/JV9NV4k.png)
+
+- Includes a copy of [Jason Harper's ViewFrame](http://nixietube.info) to decompile NewtonScript functions.  Not all functions decompile yet, as there are some [NEWT/0 bugs](https://github.com/pablomarx/NEWT0-1/commit/50815fb801a3747647b5be4e5cd000c5f63f5c33) preventing ViewFrame from functioning properly.
+- Uses WebKit's Inspector for the console.  Yes, JS->ObjC->NewtonScript is strange. But I find this more enjoyable than a basic NSTextView console. 
 
 ### Bitmap + PICT Browser
 
@@ -25,3 +34,13 @@ Features
 - Double click or use the enter key to play the sound in the tool.
 - Right click sounds(s) to save them as AIFF files.
 
+### Blob Browser
+
+![ROM Soup Blob Browser Screenshot](http://i.imgur.com/9vKYhOe.png)
+
+- Double click to view a [HexFiend](http://ridiculousfish.com/hexfiend/) powered hex dump of the blob.
+- Right click blob(s) to export them to disk.
+
+### Strings Browser
+
+![ROM Soup Strings Browser Screenshot](http://i.imgur.com/I7GlZdR.png)
