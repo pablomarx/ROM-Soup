@@ -864,14 +864,14 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"/Users/swhite/Projects/ROM\\ Soup/External",
+					"$(SRCROOT)/External",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ROM Soup/ROM Soup-Prefix.pch";
 				INFOPLIST_FILE = "ROM Soup/ROM Soup-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"/Users/swhite/Desktop/ROM\\ Soup/External/NEWT0/build",
+					"$(SRCROOT)/External/NEWT0/build",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -890,14 +890,14 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"/Users/swhite/Projects/ROM\\ Soup/External",
+					"$(SRCROOT)/External",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ROM Soup/ROM Soup-Prefix.pch";
 				INFOPLIST_FILE = "ROM Soup/ROM Soup-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"/Users/swhite/Desktop/ROM\\ Soup/External/NEWT0/build",
+					"$(SRCROOT)/External/NEWT0/build",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
