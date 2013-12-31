@@ -19,15 +19,18 @@
 #define AIF_HEADER_SIZE 128
 #define ROUND_UP(a,b)              (((a) + (b) - 1) & ~((b) - 1))
 
-#define PF_RECORD_TYPE_DATA     0x40
-#define PF_RECORD_TYPE_ARRAY    0x41
-#define PF_RECORD_TYPE_FRAME    0x43
+#define RECORD_TYPE_DATA  0
+#define RECORD_TYPE_ARRAY 1
+#define RECORD_TYPE_FRAME 3
 
 #define VPUM_TYPE(v)        ((v)&0x03)
 #define VPUM_TYPE_VALUE     0
 #define VPUM_TYPE_POINTER   1
 #define VPUM_TYPE_UNUSUAL   2
 #define VPUM_TYPE_MAGIC     3
+
+#define VPUM_TYPE_UNUSUAL_CODEBLOCK  0x032
+#define VPUM_TYPE_UNUSUAL_CFUNCTION 0x132
 
 #define VPUM_AS_VALUE(v)    (((long) (v)) >> 2)
 #define VPUM_AS_POINTER(v)  ((v) & 0xFFFFFFFC)
@@ -161,10 +164,9 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
   // Figure out ROM versions / etc
   //
   uint32_t romManufacturer = htonl(*(cursor + ((_addressOffset + 0x13f0) / 4)));
-  uint32_t romVersion = 0;
   if (romManufacturer == 0x01000000) {
 //    uint32_t hardwareType = htonl(*(cursor + ((_addressOffset + 0x13ec) / 4)));
-    romVersion = htonl(*(cursor + ((_addressOffset + 0x13dc) / 4)));
+    _romVersion = htonl(*(cursor + ((_addressOffset + 0x13dc) / 4)));
   }
   else if (romManufacturer == 1) {
     uint32_t oldCheckSumC = htonl(*(cursor + ((_addressOffset + 0x13e4) / 4)));
@@ -177,7 +179,7 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
                                           }];
       goto out;
     }
-    romVersion = romManufacturer;
+    _romVersion = romManufacturer;
   }
   else {
     error = [NSError errorWithDomain:NWTROMImporterErrorDomain
@@ -188,13 +190,18 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
     goto out;
   }
   
-  if (romVersion >> 16 != 1 && romVersion != 0x06290000 && romVersion != 0x00000001 /*Notepad 1.0b1 image*/) {
+  _romMajor = (_romVersion >> 16);
+  if (_romMajor != 2 && _romMajor != 1 && _romVersion != 0x06290000 && _romVersion != 0x00000001 /*Notepad 1.0b1 image*/) {
     error = [NSError errorWithDomain:NWTROMImporterErrorDomain
                                 code:0
                             userInfo:@{ NSLocalizedFailureReasonErrorKey : @"Unsupported ROM Version",
-                                        NSLocalizedDescriptionKey        : [NSString stringWithFormat:@"ROM Version 0x%08x is not supported", romVersion],
+                                        NSLocalizedDescriptionKey        : [NSString stringWithFormat:@"ROM Version 0x%08x is not supported", _romVersion],
                                         }];
     goto out;
+  }
+  
+  if (_romMajor != 2) {
+    _romMajor = 1; // fix the J1 & 1.0b1 images
   }
   
   //
@@ -218,12 +225,21 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
     _soupEnd = htonl(*cursor);
     break;
   }
+  NSLog(@"_soupStart=0x%08x, _soupEnd=0x%08x", _soupStart, _soupEnd);
   
   if (_soupStart == 0 || _soupEnd == 0) {
     error = [NSError errorWithDomain:NWTROMImporterErrorDomain
                                 code:0
                             userInfo:@{ NSLocalizedFailureReasonErrorKey : @"Couldn't find soup start or end markers",
                                         NSLocalizedDescriptionKey        : @"This means we failed to find 'Uriah Strings' in the file",
+                                        }];
+    goto out;
+  }
+  else if (_soupStart == _soupEnd) {
+    error = [NSError errorWithDomain:NWTROMImporterErrorDomain
+                                code:0
+                            userInfo:@{ NSLocalizedFailureReasonErrorKey : @"Invalid soup start or end markers",
+                                        NSLocalizedDescriptionKey        : @"This means my assumption about 'Uriah Strings' wasn't the best",
                                         }];
     goto out;
   }
@@ -278,14 +294,16 @@ out:
         value = NewtMakeCharacter(vpum >> 4);
       }
       else {
-        NSLog(@"BAD vpum=0x%08x", vpum);
+        if (_romMajor != 2 || (vpum != VPUM_TYPE_UNUSUAL_CODEBLOCK && vpum != VPUM_TYPE_UNUSUAL_CFUNCTION)) {
+          NSLog(@"BAD vpum=0x%08x", vpum);
+        }
       }
       break;
     case VPUM_TYPE_VALUE:
       value = NewtMakeInteger(VPUM_AS_VALUE(vpum));
       break;
     default:
-      NSLog(@"unhandled vpum type!");
+      NSAssert1(NO, @"Unhandled vpum type: %i", VPUM_TYPE(vpum));
   }
   return value;
 }
@@ -313,9 +331,9 @@ out:
     *outClass = header.class;
   }
   
-  if (header.type != PF_RECORD_TYPE_ARRAY) {
-    NSAssert(NO, @"Bad offset??");
-  }
+  int dataType = (header.type & 3);
+  int dataFormat = (header.type >> 4);
+  NSAssert2(dataType == RECORD_TYPE_ARRAY && (dataFormat == 0x4 || (_romMajor == 2 && dataFormat == 0xc)), @"Unexpected header type 0x%02x at offset 0x%08x", header.type, offset);
   
   NSMutableArray *results = [NSMutableArray array];
   
@@ -327,6 +345,9 @@ out:
   if (type == VPUM_TYPE_POINTER) {
     [results addObjectsFromArray:[self frameKeysForArrayRecordAtOffset:VPUM_AS_POINTER(hash)
                                                                  class:NULL]];
+  }
+  else if (type == VPUM_TYPE_VALUE && type != VPUM_NIL) {
+    NSLog(@"%s: value as the first entry: %i", __PRETTY_FUNCTION__, (int)VPUM_AS_VALUE(type));
   }
   cursor += 4;
   
@@ -364,6 +385,7 @@ out:
   
   int recordSize = (header.size[0] << 16) | (header.size[1] << 8) | header.size[2];
   if (recordSize == 0) {
+    //NSAssert1(recordSize > 0, @"Invalid 0 length record at offset 0x%08x", offset);
     NSLog(@"bad record size!");
     return 0;
   }
@@ -376,7 +398,19 @@ out:
   int blobSize = recordSize - headerSize;
 
   newtRef result = kNewtUnknownType;
-  if (header.type == PF_RECORD_TYPE_DATA) {
+  int dataType = (header.type & 0xf);
+  if (dataType != RECORD_TYPE_DATA && dataType != RECORD_TYPE_ARRAY && dataType != RECORD_TYPE_FRAME) {
+    NSLog(@"Unexpected data type %i from header value: 0x%02x", dataType, header.type);
+    return 0;
+  }
+
+  int dataFormat = (header.type >> 4);
+  if (dataFormat !=4 && (_romMajor != 2 || dataFormat != 0xc)) {
+    NSLog(@"Unexpected data format %i from header value: 0x%02x", dataType, header.type);
+    return 0;
+  }
+  
+  if (dataType == RECORD_TYPE_DATA) {
     if (header.class == _romStringSymbol) {
       NSString *unicodeStr = (NSString *)CFStringCreateWithBytes(NULL, cursor, blobSize-1, kCFStringEncodingUTF16BE, false);
       result = NewtMakeString([unicodeStr UTF8String], false);
@@ -398,11 +432,18 @@ out:
       cursor  += 4;
       //headerSize += 4;
 
-      if (_romStringSymbol == 0 && strncmp((const char *)cursor, "String", 7) == 0) {
+      // strncasecmp as 2.0 uses 'string', 1.0 uses 'String'
+      if (_romStringSymbol == 0 && strncasecmp((const char *)cursor, "String", 7) == 0) {
         _romStringSymbol = offset | VPUM_TYPE_POINTER;
       }
       else if (_romInstructionsSymbol == 0 && strncmp((const char *)cursor, "instructions", 13) == 0) {
         _romInstructionsSymbol = offset | VPUM_TYPE_POINTER;
+      }
+      else if (_romCFunctionSymbol == 0 && strncmp((const char *)cursor, "CFunction", 13) == 0) {
+        _romCFunctionSymbol = offset | VPUM_TYPE_POINTER;
+      }
+      else if (_romCodeBlockSymbol == 0 && strncmp((const char *)cursor, "CodeBlock", 13) == 0) {
+        _romCodeBlockSymbol = offset | VPUM_TYPE_POINTER;
       }
       
       result = NewtMakeSymbol((const char *)cursor);
@@ -424,7 +465,7 @@ out:
       NSAssert(NO, @"Unhandled data class type");
     }
   }
-  else if (header.type == PF_RECORD_TYPE_ARRAY) {
+  else if (dataType == RECORD_TYPE_ARRAY) {
     _stats.arrays++;
     
     int arrayLength = blobSize / 4;
@@ -459,7 +500,7 @@ out:
       NSLog(@"Magic Pointers length: %i", NewtLength(result));
     }
   }
-  else if (header.type == PF_RECORD_TYPE_FRAME) {
+  else if (dataType == RECORD_TYPE_FRAME) {
     _stats.frames++;
     
     if (headerClassType != VPUM_TYPE_POINTER) {
@@ -475,17 +516,20 @@ out:
 
     BOOL frameLengthAssertion = YES;
     if (NewtRefIsInteger(frameKeysClass)) {
+/*
       int classValue = NewtRefToInteger(frameKeysClass);
       if (classValue == 1) {
-        //result = newt_env.global_fns;
-        //frameLengthAssertion = NO;
+        result = newt_env.global_fns;
+        frameLengthAssertion = NO;
       }
-    }
-    if (result == kNewtUnknownType) {
+*/
       result = NsMakeFrame(kNewtRefUnbind);
-      [self recordNewtRef:result
-                forOffset:offset];
     }
+    else {
+      result = NsMakeFrame(frameKeysClass);
+    }
+    [self recordNewtRef:result
+              forOffset:offset];
     
     NSAssert2([frameKeys count] == frameLength, @"frameKeys count %i != frameLength %i", [frameKeys count], frameLength);
     
@@ -493,9 +537,21 @@ out:
       unsigned int vpum = (cursor[0] << 24) | (cursor[1] << 16) | (cursor[2] << 8) | cursor[3];
       newtRef frameKey = [[frameKeys objectAtIndex:i] unsignedIntValue];
       newtRef frameValue = [self newtRefForVPUM:vpum];
+      if (frameValue == kNewtUnknownType) {
+        if (_romMajor == 2) {
+          if (vpum == VPUM_TYPE_UNUSUAL_CODEBLOCK) {
+            frameValue = [self newtRefForVPUM:_romCodeBlockSymbol];
+          }
+          else if (vpum == VPUM_TYPE_UNUSUAL_CFUNCTION) {
+            frameValue = [self newtRefForVPUM:_romCFunctionSymbol];
+          }
+        }
+      }
+      
       if (NewtRefIsNIL(frameValue)) {
         frameValue = kNewtRefUnbind;
       }
+      
       NsSetSlot(kNewtRefUnbind, result, frameKey, frameValue);
     }
     
@@ -504,7 +560,7 @@ out:
     }
   }
   else {
-    //    NSAssert1(NO, @"unhandled header type: 0x%08x", header.type);
+    //NSAssert1(NO, @"unhandled header type: 0x%08x", header.type);
     NSLog(@"unhandled header type: 0x%08x", header.type);
   }
   if (result == kNewtUnknownType) {
@@ -538,7 +594,7 @@ out:
   while(offset < _dataEnd) {
     int vpum = htonl(cursor[0]);
     if (vpum >> 24 != 0x00) {
-      NSLog(@"hrm: 0x%08x", vpum);
+      NSLog(@"Bailing due to vpum: 0x%08x", vpum);
       break;
     }
     

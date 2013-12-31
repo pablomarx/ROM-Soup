@@ -30,11 +30,16 @@ extern NSString * const NWTROMImporterErrorDomain;
   
   uint32_t _romStringSymbol;
   uint32_t _romInstructionsSymbol;
+  uint32_t _romCFunctionSymbol;
+  uint32_t _romFunctionSymbol;
+  uint32_t _romCodeBlockSymbol;
+  
   uint32_t _soupStart;
   uint32_t _soupEnd;
   uint32_t _dataEnd;
   uint32_t _addressOffset;
   uint32_t _romVersion;
+  uint8_t _romMajor;
 }
 
 @property (strong, atomic) NSString *romGlobalVarName;
