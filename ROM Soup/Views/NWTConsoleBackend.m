@@ -121,7 +121,7 @@
       }
       else {
         [result appendString:@"Frame"];
-        if (classRef != kNewtUnknownType && classRef != kNewtObjFrame) {
+        if (classData != NULL && classRef != kNewtUnknownType && classRef != kNewtObjFrame) {
           [result appendFormat:@", class \"%s\"", classData->name];
         }
         [result appendFormat:@", length %i", NewtLength(ref)];
