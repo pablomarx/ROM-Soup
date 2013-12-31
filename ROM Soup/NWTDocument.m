@@ -113,10 +113,21 @@ static NSString *NWTDocumentViewControllerPrefix = @"viewController-";
   _romGlobalVarName = [[regex stringByReplacingMatchesInString:romName options:0 range:NSMakeRange(0, [romName length]) withTemplate:@""] retain];
 
   romImporter.romGlobalVarName = _romGlobalVarName;
-  [romImporter import];
+  BOOL success = NO;
+  @try {
+    [romImporter import];
+    success = YES;
+  }
+  @catch (id e) {
+    NSRunAlertPanel(NSLocalizedString(@"Deep toast alert", @"Deep toast alert"),
+                    [NSString stringWithFormat:@"Importing the ROM resulted in: %@", e],
+                    NSLocalizedString(@"Bummer!", @"Bummer!"),
+                    nil,
+                    nil);
+  }
   [romImporter release];
 
-  return YES;
+  return success;
 }
 
 #pragma mark -
