@@ -14,6 +14,7 @@ extern NSString * const NWTROMImporterErrorDomain;
   NSMutableDictionary *_pointerMap;
   NSMutableSet *_magicPointers;
   NSString *_romGlobalVarName;
+  NSArray *_romPackages;
   
   unsigned char *_romImage;
   int _romFp;
@@ -30,9 +31,6 @@ extern NSString * const NWTROMImporterErrorDomain;
   
   uint32_t _romStringSymbol;
   uint32_t _romInstructionsSymbol;
-  uint32_t _romCFunctionSymbol;
-  uint32_t _romFunctionSymbol;
-  uint32_t _romCodeBlockSymbol;
   
   uint32_t _soupStart;
   uint32_t _soupEnd;

@@ -10,11 +10,12 @@
 
 #include <sys/mman.h>
 
-#include "NewtObj.h"
 #include "NewtEnv.h"
 #include "NewtFns.h"
-#include "NewtNSOF.h"
 #include "NewtGC.h"
+#include "NewtNSOF.h"
+#include "NewtObj.h"
+#include "NewtPkg.h"
 
 #define AIF_HEADER_SIZE 128
 #define ROUND_UP(a,b)              (((a) + (b) - 1) & ~((b) - 1))
@@ -89,6 +90,7 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
     close(_romFp);
   }
 
+  [_romPackages release];
   [_pointerMap release];
   [_magicPointers release];
   [_romGlobalVarName release];
@@ -324,7 +326,6 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
     //
     // Find RExBlock
     //
-    NSArray *packages = nil;
     unsigned char *haystack = _romImage;
     const char *needle = "RExBlock";
     int needleLength = strlen(needle);
@@ -347,11 +348,10 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
       }
       
       NSLog(@"Found a RExBlock at 0x%08x", offset);
-      packages = [self packagesFromRexBlockAtOffset:offset];
+      _romPackages = [[self packagesFromRexBlockAtOffset:offset] retain];
       break;
     } while (offset < _romSize - needleLength);
     
-    NSLog(@"packages=%@", packages);
   }
   
   success = YES;
@@ -541,12 +541,6 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
       else if (_romInstructionsSymbol == 0 && strncmp((const char *)cursor, "instructions", 13) == 0) {
         _romInstructionsSymbol = offset | VPUM_TYPE_POINTER;
       }
-      else if (_romCFunctionSymbol == 0 && strncmp((const char *)cursor, "CFunction", 13) == 0) {
-        _romCFunctionSymbol = offset | VPUM_TYPE_POINTER;
-      }
-      else if (_romCodeBlockSymbol == 0 && strncmp((const char *)cursor, "CodeBlock", 13) == 0) {
-        _romCodeBlockSymbol = offset | VPUM_TYPE_POINTER;
-      }
       
       result = NewtMakeSymbol((const char *)cursor);
       _stats.symbols++;
@@ -595,7 +589,7 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
       }
     }
     
-    if (offset != 0x003bbcc0) {
+    if (offset != 0x003bbcc0) { // J1 armistice hack
       NSAssert2(arrayLength == NewtLength(result), @"arrayLength %i != NewtLength %i", arrayLength, NewtLength(result));
     }
     else {
@@ -642,10 +636,10 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
       if (frameValue == kNewtUnknownType) {
         if (_romMajor == 2) {
           if (vpum == VPUM_TYPE_UNUSUAL_CODEBLOCK) {
-            frameValue = [self newtRefForVPUM:_romCodeBlockSymbol];
+            frameValue = NSSYM(CodeBlock);
           }
           else if (vpum == VPUM_TYPE_UNUSUAL_CFUNCTION) {
-            frameValue = [self newtRefForVPUM:_romCFunctionSymbol];
+            frameValue = NSSYM(CFunction);
           }
         }
       }
@@ -679,8 +673,19 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
 
 - (void) import {
   newtRef romObjects = NewtMakeArray(kNewtRefUnbind, 0);
+  newtRef packagesRef = kNewtUnknownType;
   if (_romGlobalVarName != nil) {
-    NcSetSlot(newt_env.globals, NewtMakeSymbol([_romGlobalVarName UTF8String]), romObjects);
+    if ([_romPackages count] > 0) {
+      newtRef romFrame = NsMakeFrame(kNewtRefUnbind);
+      packagesRef = NewtMakeArray(kNewtRefUnbind, 0);
+      
+      NcSetSlot(romFrame, NSSYM(romSoup), romObjects);
+      NcSetSlot(romFrame, NSSYM(packages), packagesRef);
+      NcSetSlot(newt_env.globals, NewtMakeSymbol([_romGlobalVarName UTF8String]), romFrame);
+    }
+    else {
+      NcSetSlot(newt_env.globals, NewtMakeSymbol([_romGlobalVarName UTF8String]), romObjects);
+    }
   }
 
   newtRef ref;
@@ -751,6 +756,18 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
 
   NSLog(@"Finished import at 0x%08x! tocEntries=%i, tocObjects=%i, tocFrames=%i, tocSymbols=%i", offset, tocEntries, tocObjects, tocFrames, tocSymbols);
   [self dumpStats];
+  
+#if 0
+  if ([_romPackages count] > 0) {
+    for (int i=0; i<[_romPackages count]; i++) {
+      NSDictionary *aRomPackage = [_romPackages objectAtIndex:i];
+      uint32_t offset = [[aRomPackage objectForKey:@"offset"] unsignedIntValue];
+      uint32_t length = [[aRomPackage objectForKey:@"length"] unsignedIntValue];
+      newtRef result = NewtReadPkgWithOffset((_romImage + offset), offset, length);
+      NcAddArraySlot(packagesRef, result);
+    }
+  }
+#endif
 }
 
 @end
