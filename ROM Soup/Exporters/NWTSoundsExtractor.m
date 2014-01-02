@@ -37,20 +37,24 @@
   /*
    * The sound frame that this function returns has the following slots.
    * sndFrameType
-   *        The format of this sound frame. Currently, Newton
-   *        sound frames always have the symbol 'simpleSound
-   *        in this slot; future Newton devices may store other
-   *        values here.
+   *        Symbol specifying the type of sound frame. The 'simpleSound 
+   *        symbol indicates a standard sound, while the 'codec symbol 
+   *        indicates a compressed sound.
    * samples
    *        A frame of class 'samples containing the binary sound
    *        data. The sound data must have been sampled at 11Khz
    *        or 22KHz
    * samplingRate
-   *        A ﬂoating-point value specifying the rate at which the
-   *        sample data is to be played back
+   *        Optional. Real or Integer value describing the sampling 
+   *        rate of data in the samples slot. (8000.0, 11013.21586, 
+   *        and 22026.43172 are common values). If missing, the sound
+   *        channel assumes 22026.43172. For more information, see the 
+   *        description of the recordingQuality slot in the system’s 
+   *        user configuration data.
    * dataType
-   *        A code that reﬂects the data type. Currently, the value of
-   *        this slot is always 1, indicating 8-bit samples.
+   *        Optional. Integer value specifying the size of samples 
+   *        in bits. If present, it must be 8 (k8Bit) or 16 (k16Bit). 
+   *        If missing, k8Bit is assumed.
    * compressionType
    *        Optional. Integer. Encoding format of samples. If present, 
    *        it must be kSampleStandard (0), kSampleLinear (6), or 
