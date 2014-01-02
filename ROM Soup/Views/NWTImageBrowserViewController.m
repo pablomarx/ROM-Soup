@@ -91,10 +91,15 @@
 */
 
   NSDictionary *bitmaps = [NWTObjectEnumerator allFrameDescendantsOfGlobalVarNamed:self.romGlobalVarName
-                                                             withRequiredSlotNames:@[ @"bits", @"bounds" ]
-                                                                 optionalSlotNames:@[ @"mask" ]];
+                                                                     withSlotNames:@[ @"bits", @"bounds" ]];
 
   for (NSNumber *aBoxedRef in bitmaps) {
+    newtRef bitmapRef = [aBoxedRef unsignedIntegerValue];
+    newtRef bits = NcGetSlot(bitmapRef, NSSYM(bits));
+    if (NewtRefIsNIL(bits) == YES) {
+      continue;
+    }
+
     NWTImageBrowserItem *item = [[NWTImageBrowserItem alloc] init];
     NSString *imageTitle = [bitmaps objectForKey:aBoxedRef];
     if ((id)imageTitle == [NSNull null]) {

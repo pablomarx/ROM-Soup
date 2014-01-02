@@ -17,12 +17,10 @@
 + (void) enumerateGlobalVarNamed:(NSString *)globalVarName usingBlock:(void (^)(newtRef parentRef, newtRef keyRef, newtRef valueRef, BOOL *stop))block;
 
 + (void) enumerateFrameDescendantsOfGlobalVarNamed:(NSString *)globalVarName
-                             withRequiredSlotNames:(NSArray *)requiredSlotNames
-                                 optionalSlotNames:(NSArray *)optionalSlotNames
+                                     withSlotNames:(NSArray *)requiredSlotNames
                                         usingBlock:(void (^)(newtRef parentRef, newtRef keyRef, newtRef valueRef, BOOL *stop))block;
 
 + (NSDictionary *) allFrameDescendantsOfGlobalVarNamed:(NSString *)globalVarName
-                                 withRequiredSlotNames:(NSArray *)requiredSlotNames
-                                     optionalSlotNames:(NSArray *)optionalSlotNames;
+                                         withSlotNames:(NSArray *)requiredSlotNames;
 
 @end

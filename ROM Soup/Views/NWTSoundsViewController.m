@@ -54,8 +54,7 @@
   [self.tableView setTarget:self];
 
   NSDictionary *soundFrames = [NWTObjectEnumerator allFrameDescendantsOfGlobalVarNamed:self.romGlobalVarName
-                                                                 withRequiredSlotNames:@[@"sndFrameType", @"samples", @"samplingRate", @"compressionType"]
-                                                                     optionalSlotNames:@[@"numSampleFrames", @"dataType"]];
+                                                                         withSlotNames:@[@"sndFrameType", @"samples", @"samplingRate", @"compressionType"]];
   
   for (NSNumber *aSoundRef in soundFrames) {
     NSMutableDictionary *soundInfo = [NSMutableDictionary dictionary];

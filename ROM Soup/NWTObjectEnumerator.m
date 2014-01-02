@@ -80,17 +80,10 @@
 }
 
 + (void) enumerateFrameDescendantsOfGlobalVarNamed:(NSString *)globalVarName
-                             withRequiredSlotNames:(NSArray *)requiredSlotNames
-                                 optionalSlotNames:(NSArray *)optionalSlotNames
+                                     withSlotNames:(NSArray *)requiredSlotNames
                                         usingBlock:(void (^)(newtRef parentRef, newtRef keyRef, newtRef valueRef, BOOL *stop))block
 {
   int minSlotLength = [requiredSlotNames count];
-  int maxSlotLength = [requiredSlotNames count] + [optionalSlotNames count];
-  NSMutableArray *allSlotNames = [NSMutableArray arrayWithArray:requiredSlotNames];
-  if (optionalSlotNames != nil) {
-    [allSlotNames addObjectsFromArray:optionalSlotNames];
-  }
-  
   [NWTObjectEnumerator enumerateGlobalVarNamed:globalVarName
                                     usingBlock:^(newtRef parentRef, newtRef keyRef, newtRef valueRef, BOOL *stop)
   {
@@ -99,24 +92,22 @@
       return;
     }
     
-    int matches = 0;
     int valueLength = NewtLength(valueRef);
-    if (valueLength > maxSlotLength || valueLength < minSlotLength) {
+    if (valueLength < minSlotLength) {
       return;
     }
     
+    int required = 0;
     for (int i=0; i<valueLength; i++) {
       newtRef nameRef = NewtGetFrameKey(valueRef, i);
-      newtSymDataRef classData = NewtRefToData(nameRef);
-      for (NSString *aSlotName in allSlotNames) {
-        if (strcasecmp([aSlotName UTF8String], classData->name) == 0) {
-          matches++;
-          break;
-        }
+      newtSymDataRef nameData = NewtRefToData(nameRef);
+      NSString *name = [NSString stringWithCString:nameData->name encoding:NSUTF8StringEncoding];
+      if ([requiredSlotNames containsObject:name] == YES) {
+        required++;
       }
     }
     
-    if (matches >= [requiredSlotNames count]) {
+    if (required == minSlotLength) {
       block(parentRef, keyRef, valueRef, stop);
     }
   }];
@@ -124,14 +115,12 @@
 }
 
 + (NSDictionary *) allFrameDescendantsOfGlobalVarNamed:(NSString *)globalVarName
-                                 withRequiredSlotNames:(NSArray *)requiredSlotNames
-                                     optionalSlotNames:(NSArray *)optionalSlotNames
+                                         withSlotNames:(NSArray *)requiredSlotNames
 {
   NSMutableDictionary *results = [NSMutableDictionary dictionary];
   
   [[self class] enumerateFrameDescendantsOfGlobalVarNamed:globalVarName
-                                    withRequiredSlotNames:requiredSlotNames
-                                        optionalSlotNames:optionalSlotNames
+                                            withSlotNames:requiredSlotNames
                                                usingBlock:^(newtRef parentRef, newtRef keyRef, newtRef valueRef, BOOL *stop)
    {
      NSNumber *boxedRef = @(valueRef);
