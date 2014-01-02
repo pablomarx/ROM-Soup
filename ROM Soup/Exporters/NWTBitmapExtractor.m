@@ -18,9 +18,29 @@
                               error:(NSError *__autoreleasing *)error
 {
   newtRef bits = NcGetSlot(bitmapRef, NSSYM(bits));
+  newtRef colordata = kNewtRefNIL;
   if (NewtRefIsNIL(bits) == YES) {
-    NSLog(@"no bits in the frame %i", bitmapRef);
-    return nil;
+    colordata = NcGetSlot(bitmapRef, NSSYM(colordata));
+    if (NewtRefIsNIL(colordata) == YES) {
+      NSLog(@"No bits, and no colordata in the frame: %i", bitmapRef);
+      return nil;
+    }
+    if (NewtRefIsArray(colordata) == YES) {
+      for (int i=0; i<NewtLength(colordata); i++) {
+        newtRef colorEntry = NewtGetArraySlot(colordata, i);
+        if (NewtRefIsFrame(colorEntry) == NO) {
+          continue;
+        }
+        newtRef bitdepth = NcGetSlot(colorEntry, NSSYM(bitdepth));
+        if (NewtRefIsInt30(bitdepth) && NewtRefToInteger(bitdepth) == 1) {
+          bits = NcGetSlot(colorEntry, NSSYM(cbits));
+          break;
+        }
+      }
+    }
+    if (NewtRefIsNIL(bits)) {
+      return nil;
+    }
   }
   
   newtRef bounds = NcGetSlot(bitmapRef, NSSYM(bounds));
