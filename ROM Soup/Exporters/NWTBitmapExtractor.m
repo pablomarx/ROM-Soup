@@ -12,14 +12,20 @@
 #include "NewtFns.h"
 #include "NewtObj.h"
 
+#define ROUND_UP(a,b)              (((a) + (b) - 1) & ~((b) - 1))
+
 @implementation NWTBitmapExtractor
 
 - (CGImageRef) newImageRefForBitmap:(newtRef)bitmapRef
                               error:(NSError *__autoreleasing *)error
 {
+  int depth = 0;
   newtRef bits = NcGetSlot(bitmapRef, NSSYM(bits));
   newtRef colordata = kNewtRefNIL;
-  if (NewtRefIsNIL(bits) == YES) {
+  if (NewtRefIsNIL(bits) == NO) {
+    depth = 1;
+  }
+  else {
     colordata = NcGetSlot(bitmapRef, NSSYM(colordata));
     if (NewtRefIsNIL(colordata) == YES) {
       NSLog(@"No bits, and no colordata in the frame: %i", bitmapRef);
@@ -31,10 +37,15 @@
         if (NewtRefIsFrame(colorEntry) == NO) {
           continue;
         }
+
+
         newtRef bitdepth = NcGetSlot(colorEntry, NSSYM(bitdepth));
-        if (NewtRefIsInt30(bitdepth) && NewtRefToInteger(bitdepth) == 1) {
-          bits = NcGetSlot(colorEntry, NSSYM(cbits));
-          break;
+        if (NewtRefIsInt30(bitdepth)) {
+          int thisDepth = NewtRefToInteger(bitdepth);
+          if (thisDepth > depth) {
+            bits = NcGetSlot(colorEntry, NSSYM(cbits));
+            depth = thisDepth;
+          }
         }
       }
     }
@@ -55,6 +66,8 @@
     NSLog(@"width/right or height/bottom is nil in bounds: %i", bounds);
     return nil;
   }
+  int width = NewtRefToInteger(widthRef);
+  int height = NewtRefToInteger(heightRef);
   
   newtRef mask = NcGetSlot(bitmapRef, NSSYM(mask));
   const char *maskData = NULL;
@@ -62,41 +75,62 @@
     maskData = NewtRefToData(mask) + 16;
   }
   
-  int width = NewtRefToInteger(widthRef);
-  int height = NewtRefToInteger(heightRef);
-  const char *bitmap = NewtRefToData(bits) + 16;
+  const uint32_t grayscaleTable[] = {0xffffffff,0xeeeeeeff,0xddddddff,0xccccccff,0xbbbbbbff,0xaaaaaaff,0x999999ff,0x888888ff,0x777777ff,0x666666ff,0x555555ff,0x444444ff,0x333333ff,0x222222ff,0x111111ff,0x000000ff};
   
+  const char *bitmap = NewtRefToData(bits) + 16;
   NSMutableData *bitmapData = [NSMutableData dataWithLength:width * height * 4];
   uint32_t *buffer = [bitmapData mutableBytes];
-  
   int i=0;
   for (int y=0; y<height; y++) {
     for (int x=0; x<width;) {
-      for (int t=128; t>=1 && x<width; t=t/2) {
-        BOOL white = ((bitmap[i]&0xff)&t);
-        int pixel;
-        if (white == NO) {
-          pixel = 0xffffffff;
+      if (depth == 4) {
+        uint8_t twoPixels = (bitmap[i] & 0xff);
+        *buffer++ = grayscaleTable[(twoPixels & 0xf0) >> 4];
+        x++;
+        if (x < width) {
+          *buffer++ = grayscaleTable[(twoPixels & 0xf)];
+          x++;
         }
-        else {
-          pixel = 0x000000ff;
+        i++;
+      }
+      else {
+        for (int t=128; t>=1 && x<width; t=t/2) {
+          BOOL white = ((bitmap[i]&0xff)&t);
+          int pixel;
+          if (white == NO) {
+            pixel = 0xffffffff;
+          }
+          else {
+            pixel = 0x000000ff;
+          }
+          
+          
+          *buffer = pixel;
+          buffer++;
+          x++;
         }
-        
-        if (maskData != NULL) {
+        i++;
+      }
+    }
+    i = ROUND_UP(i, 4);
+  }
+
+  if (maskData != NULL) {
+    i = 0;
+    uint32_t *buffer = [bitmapData mutableBytes];
+    for (int y=0; y<height; y++) {
+      for (int x=0; x<width;) {
+        for (int t=128; t>=1 && x<width; t=t/2) {
           BOOL mask = (((maskData[i]&0xff)&t)!=0);
           if (mask == true) {
-            pixel &= 0xffffff00;
+            *buffer &= 0xffffff00;
           }
+          buffer++;
+          x++;
         }
-        
-        *buffer = pixel;
-        buffer++;
-        x++;
       }
       i++;
-    }
-    if (i % 4 != 0) {
-      i += 4 - (i % 4);
+      i = ROUND_UP(i, 4);
     }
   }
   
