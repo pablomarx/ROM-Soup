@@ -95,6 +95,69 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
   [super dealloc];
 }
 
+- (NSArray *) packagesFromRexBlockAtOffset:(uint32_t)offset {
+  uint32_t *cursor = (unsigned int *)_romImage + ((offset + 8) / 4);
+#if DUMP_REX_BLOCK
+  NSLog(@"checksum=0x%08x", htonl(*cursor++));
+  NSLog(@"headerVersion=0x%08x", htonl(*cursor++));
+  NSLog(@"manufacturer=0x%08x", htonl(*cursor++));
+  NSLog(@"version=0x%08x", htonl(*cursor++));
+  NSLog(@"length=0x%08x", htonl(*cursor++));
+  NSLog(@"id=0x%08x", htonl(*cursor++));
+  NSLog(@"start=0x%08x", htonl(*cursor));
+#else
+  cursor += 6;
+#endif
+  if (htonl(*cursor) != offset) {
+    NSLog(@"Bailing out of RExBlock scan because the start:0x%08x doesn't match the offset:0x%08x", htonl(*cursor), offset);
+    return nil;
+  }
+  cursor++;
+  
+  NSMutableArray *packages = [NSMutableArray array];
+  uint32_t numOfRexBlocks = htonl(*cursor++);
+  for (int i=0; i<numOfRexBlocks; i++) {
+    uint32_t blockTag = htonl(*cursor++);
+    uint32_t blockOffset = htonl(*cursor++);
+    uint32_t blockLength = htonl(*cursor++);
+#if DUMP_REX_BLOCK
+    NSLog(@"RExBlock #%i", i);
+    NSLog(@"tag    = %c%c%c%c", (blockTag>>24 & 0xff), (blockTag>>16 & 0xff), (blockTag>>8 & 0xff), (blockTag & 0xff));
+    NSLog(@"offset = 0x%08x", blockOffset);
+    NSLog(@"length = 0x%08x", blockLength);
+#endif
+    if (blockTag != 'pkgl') {
+      continue;
+    }
+    
+    uint32_t blockEnd = offset + blockOffset + blockLength;
+    if (blockEnd > _romSize) {
+      NSLog(@"package block ends at 0x%08x, which is outside of rom size:0x%08x", blockEnd, (uint32_t)_romSize);
+      continue;
+    }
+    
+    uint32_t pkgOffset = (offset + blockOffset);
+    do {
+      const char *package = (const char *)(_romImage + pkgOffset);
+      if (strncasecmp(package, "package1", 8) != 0 && strncasecmp(package, "package0", 8) != 0) {
+        NSLog(@"Didn't find valid package?xxx header at offset: 0x%08x", pkgOffset);
+        break;
+      }
+      
+      uint32_t pkgLength = htonl(*((uint32_t *)(_romImage +  pkgOffset + 28)));
+      if (pkgOffset + pkgLength > blockEnd) {
+        break;
+      }
+      
+      [packages addObject:@{ @"offset" : @(pkgOffset),
+                             @"length" : @(pkgLength)}];
+      pkgOffset += pkgLength;
+    } while (pkgOffset < blockEnd);
+  }
+
+  return packages;
+}
+
 - (BOOL) _openFile:(NSString *)romFile
              error:(NSError *__autoreleasing *)outError
 {
@@ -207,24 +270,29 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
   //
   // Find soup start/end markers
   //
-  uint32_t offset = 0;
   unsigned char *haystack = _romImage;
-  while(offset < _romSize) {
-    haystack = memchr(haystack, 'U', _romSize - offset);
-    offset = haystack-_romImage;
-    
-    char *uriahStrings = strnstr((const char*)haystack, "Uriah Strings", 14);
-    if (uriahStrings == NULL) {
+  const char *needle = "Uriah Strings";
+  int needleLength = strlen(needle);
+  uint32_t offset = 0;
+  do {
+    haystack = memchr(haystack, needle[0], _romSize - offset);
+    if (haystack == NULL) {
+      break;
+    }
+
+    offset = (haystack - _romImage);
+    if (bcmp((const char *)haystack, needle, needleLength) != 0) {
       haystack++;
       continue;
     }
     
-    offset = ROUND_UP(offset + 14, 4);
+    offset = ROUND_UP(offset + needleLength, 4);
     cursor = (unsigned int *)_romImage + (offset / 4);
     _soupStart = htonl(*cursor++);
     _soupEnd = htonl(*cursor);
     break;
   }
+  while (offset < _romSize - needleLength);
   NSLog(@"_soupStart=0x%08x, _soupEnd=0x%08x", _soupStart, _soupEnd);
   
   if (_soupStart == 0 || _soupEnd == 0) {
@@ -252,9 +320,43 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
     goto out;
   }
   
+  if (_romMajor == 2) {
+    //
+    // Find RExBlock
+    //
+    NSArray *packages = nil;
+    unsigned char *haystack = _romImage;
+    const char *needle = "RExBlock";
+    int needleLength = strlen(needle);
+    uint32_t offset = 0;
+    do {
+      haystack = memchr(haystack, needle[0], _romSize - offset - needleLength);
+      if (haystack == NULL) {
+        break;
+      }
+      offset = (haystack - _romImage);
+      
+      if (bcmp((const char *)haystack, needle, needleLength) != 0) {
+        haystack++;
+        continue;
+      }
+      
+      if (offset % 4 != 0 || *((uint32_t *)(haystack -  4)) != 0) {
+        haystack += needleLength;
+        continue;
+      }
+      
+      NSLog(@"Found a RExBlock at 0x%08x", offset);
+      packages = [self packagesFromRexBlockAtOffset:offset];
+      break;
+    } while (offset < _romSize - needleLength);
+    
+    NSLog(@"packages=%@", packages);
+  }
+  
   success = YES;
-
-out:
+  
+  out:
   if (error != nil) {
     NSLog(@"An error occurred: %@", error);
     if (outError != nil) {
