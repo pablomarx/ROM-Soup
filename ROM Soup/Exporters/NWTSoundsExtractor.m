@@ -27,16 +27,13 @@
     NSLog(@"no 'samples slot in frame %i", soundRef);
     return nil;
   }
+  
+  newtRef compressionType = NcGetSlot(soundRef, NSSYM(compressionType));
+  if (NewtRefIsNIL(compressionType) == false && NewtRefIsInt30(compressionType) && NewtRefToInt30(compressionType) != 0) {
+    NSLog(@"Unsupported compression type: %i", NewtRefToInt30(compressionType));
+    return nil;
+  }
 
-  /*
-   bootsound: {
-   sndFrameType: 'simpleSound,
-   samples: <Binary, class "samples", length 10380>,
-   samplingRate: 11025,
-   numSampleFrames: 0,
-   compressionType: 0
-   },
-*/
   /*
    * The sound frame that this function returns has the following slots.
    * sndFrameType
@@ -55,9 +52,9 @@
    *        A code that reﬂects the data type. Currently, the value of
    *        this slot is always 1, indicating 8-bit samples.
    * compressionType
-   *        A code that reﬂects the compression strategy. Currently,
-   *        the value of this slot is always 0 (zero), indicating no
-   *        compression.
+   *        Optional. Integer. Encoding format of samples. If present, 
+   *        it must be kSampleStandard (0), kSampleLinear (6), or 
+   *        kSampleMuLaw (1). If missing, kSampleStandard is assumed.  
    */
   const uint32_t *rawData = NewtRefToData(samplesRef);
   uint32_t dataLength = NewtLength(samplesRef);
