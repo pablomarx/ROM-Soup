@@ -272,7 +272,11 @@
   NSSavePanel *savePanel = [NSSavePanel savePanel];
   [savePanel setCanCreateDirectories:YES];
   [savePanel setTitle:NSLocalizedString(@"Save Image As...", @"Save Image As...")];
-  [savePanel setNameFieldStringValue:[[item imageTitle] stringByAppendingPathExtension:@"png"]];
+  NSString *filename = [item imageTitle];
+  if (filename == nil) {
+    filename = @"unknown";
+  }
+  [savePanel setNameFieldStringValue:[filename stringByAppendingPathExtension:@"png"]];
   
   NSInteger result = [savePanel runModal];
   if (result != NSFileHandlingPanelOKButton) {
@@ -313,11 +317,16 @@
   [browserSelection enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
     NWTImageBrowserItem *item = [self imageBrowserItemAtIndex:idx];
 
-    NSString *fileName = [[item imageTitle] stringByAppendingPathExtension:@"png"];
+    NSString *imageTitle = [item imageTitle];
+    if (imageTitle == nil) {
+      imageTitle = @"unknown";
+    }
+
+    NSString *fileName = [imageTitle stringByAppendingPathExtension:@"png"];
     NSString *filePath = [basePath stringByAppendingPathComponent:fileName];
     int count=0;
     while ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
-      fileName = [[[item imageTitle] stringByAppendingFormat:@" %i", ++count] stringByAppendingPathExtension:@"png"];
+      fileName = [[imageTitle stringByAppendingFormat:@" %i", ++count] stringByAppendingPathExtension:@"png"];
       filePath = [basePath stringByAppendingPathComponent:fileName];
     }
     
