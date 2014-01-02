@@ -54,6 +54,7 @@
   [self.tableView setTarget:self];
   
   newtRef bitsRef = NSSYM(bits);
+  newtRef cbitsRef = NSSYM(cbits);
   newtRef maskRef = NSSYM(mask);
   newtRef pictureRef = NSSYM(picture);
   newtRef samplesRef = NSSYM(samples);
@@ -84,7 +85,7 @@
      // Bits and pictures and sounds we display elsewhere
      // Patterns we don't display, but should!
      // UniC .. scares me
-     if (classRef == bitsRef || classRef == pictureRef || classRef == samplesRef || classRef == maskRef || classRef == patternRef || classRef == unicRef) {
+     if (classRef == bitsRef || classRef == cbitsRef || classRef == pictureRef || classRef == samplesRef || classRef == maskRef || classRef == patternRef || classRef == unicRef) {
        return;
      }
      
