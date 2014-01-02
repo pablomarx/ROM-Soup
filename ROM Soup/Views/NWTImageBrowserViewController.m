@@ -92,11 +92,17 @@
 
   NSDictionary *bitmaps = [NWTObjectEnumerator allFrameDescendantsOfGlobalVarNamed:self.romGlobalVarName
                                                                      withSlotNames:@[ @"bits", @"bounds" ]];
+  NSDictionary *colorBitmaps = [NWTObjectEnumerator allFrameDescendantsOfGlobalVarNamed:self.romGlobalVarName
+                                                                          withSlotNames:@[ @"colordata", @"bounds" ]];
 
-  for (NSNumber *aBoxedRef in bitmaps) {
+  NSMutableDictionary *allImages = [NSMutableDictionary dictionaryWithDictionary:bitmaps];
+  [allImages addEntriesFromDictionary:colorBitmaps];
+  
+  for (NSNumber *aBoxedRef in allImages) {
     newtRef bitmapRef = [aBoxedRef unsignedIntegerValue];
     newtRef bits = NcGetSlot(bitmapRef, NSSYM(bits));
-    if (NewtRefIsNIL(bits) == YES) {
+    newtRef colordata = NcGetSlot(bitmapRef, NSSYM(colordata));
+    if (NewtRefIsNIL(bits) == YES && NewtRefIsNIL(colordata) == YES) {
       continue;
     }
 
