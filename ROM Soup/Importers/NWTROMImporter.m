@@ -523,8 +523,7 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
                 forOffset:offset];
     }
     else if (header.class == _romInstructionsSymbol) {
-      newtRef dataClass = NewtMakeSymbol("instructions");
-      result = NewtMakeBinary(dataClass, cursor, blobSize + 1, false);
+      result = NewtMakeBinary(NSSYM0(instructions), cursor, blobSize + 1, false);
       _stats.codeBlocks++;
       [self recordNewtRef:result
                 forOffset:offset];
@@ -757,7 +756,6 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
   NSLog(@"Finished import at 0x%08x! tocEntries=%i, tocObjects=%i, tocFrames=%i, tocSymbols=%i", offset, tocEntries, tocObjects, tocFrames, tocSymbols);
   [self dumpStats];
   
-#if 0
   if ([_romPackages count] > 0) {
     for (int i=0; i<[_romPackages count]; i++) {
       NSDictionary *aRomPackage = [_romPackages objectAtIndex:i];
@@ -767,7 +765,6 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
       NcAddArraySlot(packagesRef, result);
     }
   }
-#endif
 }
 
 @end
