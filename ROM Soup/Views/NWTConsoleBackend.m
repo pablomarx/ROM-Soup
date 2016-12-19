@@ -146,7 +146,11 @@
 
 - (NSDictionary *) remoteObjectRepresentationOfNewtRef:(newtRef)ref {
   int refType = NewtGetRefType(ref, YES);
-  
+  if (refType == kNewtMagicPointer) {
+    ref = NcResolveMagicPointer(ref);
+    refType = NewtGetRefType(ref, YES);
+  }
+
   NSString *type = nil;
   NSString *description = [self descriptionForNewtRef:ref];
   BOOL hasChildren = NO;

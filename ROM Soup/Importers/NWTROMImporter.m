@@ -229,7 +229,8 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
   // Figure out ROM versions / etc
   //
   uint32_t romManufacturer = htonl(*(cursor + ((_addressOffset + 0x13f0) / 4)));
-  if (romManufacturer == 0x01000000) {
+  // Apple, Sharp, Motorola
+  if (romManufacturer == 0x01000000 || romManufacturer == 0x01000100 || romManufacturer == 0x01000200) {
 //    uint32_t hardwareType = htonl(*(cursor + ((_addressOffset + 0x13ec) / 4)));
     _romVersion = htonl(*(cursor + ((_addressOffset + 0x13dc) / 4)));
   }
