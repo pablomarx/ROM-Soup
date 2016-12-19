@@ -69,6 +69,35 @@
   [self.tableView setRowSizeStyle:NSTableViewRowSizeStyleCustom];
 }
 
+#pragma mark -
+- (IBAction)copy:(id)sender {
+	NSMutableString *selectedStrings = [NSMutableString string];
+	NSIndexSet *selectedRows = [self.tableView selectedRowIndexes];
+	NSInteger numOfRows = [selectedRows count];
+	[selectedRows enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
+		[selectedStrings appendString:[_strings objectAtIndex:idx]];
+		if (numOfRows > 1) {
+			[selectedStrings appendString:@"\n/************/\n"];
+		}
+	}];
+
+	NSPasteboardItem *anItem = [[[NSPasteboardItem alloc] init] autorelease];
+	[anItem setString:selectedStrings
+			forType:NSPasteboardTypeString];
+
+	NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
+	[pasteboard clearContents];
+	[pasteboard writeObjects:[NSArray arrayWithObject:anItem]];
+}
+
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem {
+	if ([menuItem action] == @selector(copy:)) {
+		return ([self.tableView numberOfSelectedRows] > 0);
+	}
+	return [super validateMenuItem:menuItem];
+}
+
+
 #pragma mark - 
 #pragma mark
 /*
