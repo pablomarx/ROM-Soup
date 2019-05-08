@@ -7,9 +7,9 @@ Download the app from (https://www.dropbox.com/s/s3qubbau9pp5cgz/ROM%20Soup.zip)
 
 Need a ROM image? Try:
 
-- [Newt J1 Armistice v629AS.00](http://www.unna.org/incoming/Newt%20J1Armistice%20image.zip)
-- [Newton Notepad 1.0b1](http://www.unna.org/incoming/notepad-1.0b1.rom.gz)
-- [Original MessagePad 1.3 (414059)](http://www.unna.org/incoming/omp-1.3-414059.rom.gz)
+- [Newt J1 Armistice v629AS.00](https://archive.org/download/AppleNewtonROMs/Newt%20J1Armistice%20image)
+- [Newton Notepad 1.0b1](https://archive.org/download/AppleNewtonROMs/Notepad%20v1.0b1.rom)
+- [Original MessagePad 1.3 (414059)](https://archive.org/download/AppleNewtonROMs/MessagePad%20OMP%20v1.3.rom)
 
 Features
 --------
