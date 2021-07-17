@@ -515,10 +515,10 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
   
   if (dataType == RECORD_TYPE_DATA) {
     if (header.class == _romStringSymbol) {
-      NSString *unicodeStr = (NSString *)CFStringCreateWithBytes(NULL, cursor, blobSize-1, kCFStringEncodingUTF16BE, false);
+        NSString *unicodeStr = (NSString *)CFStringCreateWithBytes(NULL, cursor, blobSize, kCFStringEncodingUTF16BE, false);
         if (unicodeStr == nil) {
             result = NewtMakeInteger(-1);
-            NSLog(@"Failed to make unicode string");
+            NSLog(@"Failed to make unicode string (first bytes: %x%x%x%x, blobSize: %i, offset: %i)", *cursor, *(cursor + 1), *(cursor + 2), *(cursor + 3), blobSize, offset);
         }
         else {
             result = NewtMakeString([unicodeStr UTF8String], false);
