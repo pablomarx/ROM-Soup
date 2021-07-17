@@ -523,11 +523,11 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
         else {
             result = NewtMakeString([unicodeStr UTF8String], false);
             CFRelease(unicodeStr);
-
-            _stats.strings++;
-            [self recordNewtRef:result
-                      forOffset:offset];
         }
+
+        _stats.strings++;
+        [self recordNewtRef:result
+                  forOffset:offset];
     }
     else if (header.class == _romInstructionsSymbol) {
       result = NewtMakeBinary(NSSYM0(instructions), cursor, blobSize + 1, false);
