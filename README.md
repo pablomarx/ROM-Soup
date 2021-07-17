@@ -3,7 +3,7 @@ ROM-Soup
 
 Tool for exploring the ROM Soup from Newton ROM images.  This reads all of the NewtonScript objects from a given ROM image, and recreates them inside a NEWT/0 virtual machine.  It then allows you to explore these recreations.
 
-Download the app from (https://www.dropbox.com/s/s3qubbau9pp5cgz/ROM%20Soup.zip).  If you build from source, remember to initialize&update the git submodules.
+Download the app from [the releases tab](https://github.com/pablomarx/ROM-Soup/releases).  If you build from source, remember to initialize&update the git submodules.
 
 Need a ROM image? Try:
 
