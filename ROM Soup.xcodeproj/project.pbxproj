@@ -875,6 +875,7 @@
 					"$(inherited)",
 					"$(SRCROOT)/External/NEWT0/build",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/External/NEWT0/src";
 				WRAPPER_EXTENSION = app;
@@ -897,6 +898,7 @@
 					"$(inherited)",
 					"$(SRCROOT)/External/NEWT0/build",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/External/NEWT0/src";
 				WRAPPER_EXTENSION = app;
