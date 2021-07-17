@@ -515,7 +515,7 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
   
   if (dataType == RECORD_TYPE_DATA) {
     if (header.class == _romStringSymbol) {
-      NSString *unicodeStr = (NSString *)CFStringCreateWithBytes(NULL, cursor, blobSize-1, kCFStringEncodingUTF16BE, false);
+      NSString *unicodeStr = (NSString *)CFStringCreateWithBytes(NULL, cursor, blobSize, kCFStringEncodingUTF16BE, false);
       result = NewtMakeString([unicodeStr UTF8String], false);
       CFRelease(unicodeStr);
 
