@@ -16,7 +16,7 @@
 		F12D28E8186F9354006A1FEB /* NWTBlobsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F12D28E6186F9354006A1FEB /* NWTBlobsViewController.xib */; };
 		F12D28F7186FA1A9006A1FEB /* NWTHexViewWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F12D28F5186FA1A9006A1FEB /* NWTHexViewWindowController.m */; };
 		F12D28F8186FA1A9006A1FEB /* NWTHexViewWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F12D28F6186FA1A9006A1FEB /* NWTHexViewWindowController.xib */; };
-		F12D291A186FA70D006A1FEB /* HexFiend.framework in Copy Bundle Frameworks */ = {isa = PBXBuildFile; fileRef = F12D2918186FA707006A1FEB /* HexFiend.framework */; };
+		F12D291A186FA70D006A1FEB /* HexFiend.framework in Copy Bundle Frameworks */ = {isa = PBXBuildFile; fileRef = F12D2918186FA707006A1FEB /* HexFiend.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		F12D291B186FA760006A1FEB /* HexFiend.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F12D2918186FA707006A1FEB /* HexFiend.framework */; };
 		F14DB23A186CB35F002FBB46 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F14DB239186CB35F002FBB46 /* Quartz.framework */; };
 		F14DB242186CB608002FBB46 /* NWTImageBrowserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F14DB240186CB608002FBB46 /* NWTImageBrowserViewController.m */; };
