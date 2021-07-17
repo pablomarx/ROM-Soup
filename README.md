@@ -11,6 +11,14 @@ Need a ROM image? Try:
 - [Newton Notepad 1.0b1](https://archive.org/download/AppleNewtonROMs/Notepad%20v1.0b1.rom)
 - [Original MessagePad 1.3 (414059)](https://archive.org/download/AppleNewtonROMs/MessagePad%20OMP%20v1.3.rom)
 
+Modern Branch
+--------
+
+This branch compiles and executes on 64-bit x86_64 and M1.  Sounds, Blobs and Strings tabs appear to function correctly.  The Images tab displays bitmaps fine, however PICT images are not being decoded properly via [NSPICTImageRep](https://github.com/pablomarx/ROM-Soup/blob/cf308d44c76528f8d192c17e53fec2d6b09d73bf/ROM%20Soup/Exporters/NWTPICTExtractor.m#L23).  The console tab crashes when trying to expand the default object. 
+
+<img width="593" alt="Screen Shot 2021-07-17 at 13 13 57" src="https://user-images.githubusercontent.com/179162/126048391-c55ea30e-7a2a-44af-85e6-4100ebbbe836.png">
+
+
 Features
 --------
 
