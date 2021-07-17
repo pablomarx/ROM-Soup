@@ -275,7 +275,7 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
   //
   unsigned char *haystack = _romImage;
   const char *needle = "Uriah Strings";
-  int needleLength = strlen(needle);
+  size_t needleLength = strlen(needle);
   uint32_t offset = 0;
   do {
     haystack = memchr(haystack, needle[0], _romSize - offset);
@@ -329,7 +329,7 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
     //
     unsigned char *haystack = _romImage;
     const char *needle = "RExBlock";
-    int needleLength = strlen(needle);
+    size_t needleLength = strlen(needle);
     uint32_t offset = 0;
     do {
       haystack = memchr(haystack, needle[0], _romSize - offset - needleLength);
@@ -378,7 +378,7 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
   switch(VPUM_TYPE(vpum)) {
     case VPUM_TYPE_MAGIC:
       value = NewtMakeMagicPointer(0, VPUM_AS_MAGIC(vpum));
-      [_magicPointers addObject:[NSNumber numberWithUnsignedInt:VPUM_AS_MAGIC(vpum)]];
+      [_magicPointers addObject:@(VPUM_AS_MAGIC(vpum))];
       break;
     case VPUM_TYPE_POINTER:
     {
@@ -414,7 +414,7 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
 - (NSArray *) frameKeysForArrayRecordAtOffset:(uint32_t)offset
                                         class:(newtRef *)outClass
 {
-  unsigned char *cursor = _romImage + offset + _addressOffset;
+    uint8_t *cursor = _romImage + offset + _addressOffset;
 
   entry_header header;
   int headerSize = sizeof(header);
@@ -455,9 +455,9 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
   cursor += 4;
   
   for (int i=1; i<arrayLength; i++) {
-    unsigned int hash = (cursor[0] << 24) | (cursor[1] << 16) | (cursor[2] << 8) | cursor[3];
+    uint32_t hash = (cursor[0] << 24) | (cursor[1] << 16) | (cursor[2] << 8) | cursor[3];
     newtRef entry = [self newtRefForVPUM:hash];
-    [results addObject:[NSNumber numberWithUnsignedInt:entry]];
+    [results addObject:@(entry)];
     cursor += 4;
   }
 
@@ -467,17 +467,17 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
 - (void) recordNewtRef:(newtRef)result
              forOffset:(uint32_t)offset
 {
-  [_pointerMap setObject:[NSNumber numberWithUnsignedInt:result]
-                  forKey:[NSNumber numberWithUnsignedInt:offset]];
+  [_pointerMap setObject:@(result)
+                  forKey:@(offset)];
 }
 
 - (newtRef) newtRefForRecordAtOffset:(uint32_t)offset {
-  NSNumber *mapped = [_pointerMap objectForKey:[NSNumber numberWithUnsignedInt:offset]];
+  NSNumber *mapped = [_pointerMap objectForKey:@(offset)];
   if (mapped != nil) {
-    return (newtRef)[mapped unsignedIntValue];
+    return (newtRef)[mapped unsignedLongValue];
   }
   
-  unsigned char *cursor = _romImage + offset + _addressOffset;
+  uint8_t *cursor = _romImage + offset + _addressOffset;
   
   entry_header header;
   int headerSize = sizeof(header);
@@ -516,12 +516,18 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
   if (dataType == RECORD_TYPE_DATA) {
     if (header.class == _romStringSymbol) {
       NSString *unicodeStr = (NSString *)CFStringCreateWithBytes(NULL, cursor, blobSize-1, kCFStringEncodingUTF16BE, false);
-      result = NewtMakeString([unicodeStr UTF8String], false);
-      CFRelease(unicodeStr);
+        if (unicodeStr == nil) {
+            result = NewtMakeInteger(-1);
+            NSLog(@"Failed to make unicode string");
+        }
+        else {
+            result = NewtMakeString([unicodeStr UTF8String], false);
+            CFRelease(unicodeStr);
 
-      _stats.strings++;
-      [self recordNewtRef:result
-                forOffset:offset];
+            _stats.strings++;
+            [self recordNewtRef:result
+                      forOffset:offset];
+        }
     }
     else if (header.class == _romInstructionsSymbol) {
       result = NewtMakeBinary(NSSYM0(instructions), cursor, blobSize + 1, false);
@@ -578,7 +584,7 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
     }
     
     for (int i=0; i<arrayLength; i++, cursor+=4) {
-      unsigned int vpum = (cursor[0] << 24) | (cursor[1] << 16) | (cursor[2] << 8) | cursor[3];
+      uint32_t vpum = (cursor[0] << 24) | (cursor[1] << 16) | (cursor[2] << 8) | cursor[3];
 
       newtRef slotEntry = [self newtRefForVPUM:vpum];
       if (offset == 0x003bbcc0) {
@@ -630,8 +636,8 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
     NSAssert2([frameKeys count] == frameLength, @"frameKeys count %i != frameLength %i", [frameKeys count], frameLength);
     
     for (int i=0; i<frameLength; cursor+=4, i+=1) {
-      unsigned int vpum = (cursor[0] << 24) | (cursor[1] << 16) | (cursor[2] << 8) | cursor[3];
-      newtRef frameKey = [[frameKeys objectAtIndex:i] unsignedIntValue];
+      uint32_t vpum = (cursor[0] << 24) | (cursor[1] << 16) | (cursor[2] << 8) | cursor[3];
+      newtRef frameKey = [[frameKeys objectAtIndex:i] unsignedLongValue];
       newtRef frameValue = [self newtRefForVPUM:vpum];
       if (frameValue == kNewtUnknownType) {
         if (_romMajor == 2) {
@@ -695,7 +701,7 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
   uint32_t offset = _soupEnd + _addressOffset + 4;
   NSLog(@"Starting import at offset: 0x%08x", offset);
 
-  uint32_t *cursor = (unsigned int *)(_romImage + offset);
+  uint32_t *cursor = (uint8_t *)(_romImage + offset);
   uint32_t lastPointer = 0;
   
   while(offset < _dataEnd) {
@@ -751,7 +757,7 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
 
     cursor += 1;
     tocEntries += 1;
-    offset = (unsigned char *)cursor - _romImage;
+    offset = (uint8_t *)cursor - _romImage;
   }
 
   NSLog(@"Finished import at 0x%08x! tocEntries=%i, tocObjects=%i, tocFrames=%i, tocSymbols=%i", offset, tocEntries, tocObjects, tocFrames, tocSymbols);
