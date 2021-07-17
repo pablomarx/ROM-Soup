@@ -21,8 +21,15 @@
                                     length:NewtBinaryLength(pictRef)];
 
   NSPICTImageRep *pictRep = [NSPICTImageRep imageRepWithData:pictData];
-  NSGraphicsContext *gc = [NSGraphicsContext currentContext];
   NSRect proposedRect = [pictRep boundingBox];
+  if (pictRep == nil || NSIsEmptyRect(proposedRect) == YES) {
+    NSImage *image = [NSImage imageNamed:@"badImage"];
+    return [image CGImageForProposedRect:NULL
+                                 context:NULL
+                                   hints:NULL];
+  }
+
+  NSGraphicsContext *gc = [NSGraphicsContext currentContext];
   return [pictRep CGImageForProposedRect:&proposedRect
                                  context:gc
                                    hints:nil];

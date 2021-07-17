@@ -32,6 +32,7 @@
 		F181497E186DF28500CB3A07 /* NWTSoundsExtractor.m in Sources */ = {isa = PBXBuildFile; fileRef = F181497D186DF28500CB3A07 /* NWTSoundsExtractor.m */; };
 		F1814982186DF35600CB3A07 /* NWTSoundsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F1814980186DF35600CB3A07 /* NWTSoundsViewController.m */; };
 		F1814983186DF35600CB3A07 /* NWTSoundsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F1814981186DF35600CB3A07 /* NWTSoundsViewController.xib */; };
+		F1A857A626A36C8000EFE39A /* badImage.png in Resources */ = {isa = PBXBuildFile; fileRef = F1A857A526A36C8000EFE39A /* badImage.png */; };
 		F1B23392186BC14A00E3A430 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1B23391186BC14A00E3A430 /* Cocoa.framework */; };
 		F1B2339C186BC14A00E3A430 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F1B2339A186BC14A00E3A430 /* InfoPlist.strings */; };
 		F1B2339E186BC14A00E3A430 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F1B2339D186BC14A00E3A430 /* main.m */; };
@@ -139,6 +140,7 @@
 		F181497F186DF35600CB3A07 /* NWTSoundsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWTSoundsViewController.h; sourceTree = "<group>"; };
 		F1814980186DF35600CB3A07 /* NWTSoundsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NWTSoundsViewController.m; sourceTree = "<group>"; };
 		F1814981186DF35600CB3A07 /* NWTSoundsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NWTSoundsViewController.xib; sourceTree = "<group>"; };
+		F1A857A526A36C8000EFE39A /* badImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = badImage.png; sourceTree = "<group>"; };
 		F1B2338E186BC14A00E3A430 /* ROM Soup.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ROM Soup.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F1B23391186BC14A00E3A430 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		F1B23394186BC14A00E3A430 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -395,6 +397,7 @@
 				F1B233D4186BC5E000E3A430 /* MessagePad Defs */,
 				F1B233D6186BC5E500E3A430 /* userStyle.css */,
 				F1B23399186BC14A00E3A430 /* ROM Soup-Info.plist */,
+				F1A857A526A36C8000EFE39A /* badImage.png */,
 				F1B2339A186BC14A00E3A430 /* InfoPlist.strings */,
 				F1B2339D186BC14A00E3A430 /* main.m */,
 				F1B2339F186BC14A00E3A430 /* ROM Soup-Prefix.pch */,
@@ -651,6 +654,7 @@
 				F12D28D8186F744D006A1FEB /* ViewFrame.pkg in Resources */,
 				F12D28E0186F88C9006A1FEB /* NWTImageViewWindowController.xib in Resources */,
 				F1B2339C186BC14A00E3A430 /* InfoPlist.strings in Resources */,
+				F1A857A626A36C8000EFE39A /* badImage.png in Resources */,
 				F1B233D5186BC5E000E3A430 /* MessagePad Defs in Resources */,
 				F12D28E8186F9354006A1FEB /* NWTBlobsViewController.xib in Resources */,
 				F14DB253186CB67F002FBB46 /* NWTConsoleViewController.xib in Resources */,
