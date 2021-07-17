@@ -54,7 +54,7 @@
 		F1B23586186BC77500E3A430 /* NewtBC.c in Sources */ = {isa = PBXBuildFile; fileRef = F1B234E0186BC77500E3A430 /* NewtBC.c */; };
 		F1B23587186BC77500E3A430 /* NewtEnv.c in Sources */ = {isa = PBXBuildFile; fileRef = F1B234E1186BC77500E3A430 /* NewtEnv.c */; };
 		F1B23588186BC77500E3A430 /* NewtFile.c in Sources */ = {isa = PBXBuildFile; fileRef = F1B234E2186BC77500E3A430 /* NewtFile.c */; };
-		F1B23589186BC77500E3A430 /* NewtFns.c in Sources */ = {isa = PBXBuildFile; fileRef = F1B234E3186BC77500E3A430 /* NewtFns.c */; };
+		F1B23589186BC77500E3A430 /* NewtFns.c in Sources */ = {isa = PBXBuildFile; fileRef = F1B234E3186BC77500E3A430 /* NewtFns.c */; settings = {COMPILER_FLAGS = "-Wno-implicit-function-declaration"; }; };
 		F1B2358A186BC77500E3A430 /* NewtGC.c in Sources */ = {isa = PBXBuildFile; fileRef = F1B234E4186BC77500E3A430 /* NewtGC.c */; };
 		F1B2358B186BC77500E3A430 /* NewtIconv.c in Sources */ = {isa = PBXBuildFile; fileRef = F1B234E5186BC77500E3A430 /* NewtIconv.c */; };
 		F1B2358C186BC77500E3A430 /* NewtIO.c in Sources */ = {isa = PBXBuildFile; fileRef = F1B234E6186BC77500E3A430 /* NewtIO.c */; };
