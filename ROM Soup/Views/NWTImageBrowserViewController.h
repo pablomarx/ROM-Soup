@@ -14,6 +14,7 @@
   NSString *_romGlobalVarName;
   NSMutableArray *_images;
   NSMutableArray *_imageWindows;
+  BOOL _firstAppearance;
 }
 
 @property (strong, atomic) IBOutlet IKImageBrowserView *imageBrowser;

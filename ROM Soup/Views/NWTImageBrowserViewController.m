@@ -55,13 +55,20 @@
 
 - (void) awakeFromNib {
   [super awakeFromNib];
-  
-  [self reloadData];
-  
+
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(windowWillClose:)
                                                name:NSWindowWillCloseNotification
                                              object:nil];
+}
+
+- (void) viewDidAppear {
+    [super viewDidAppear];
+    if (_firstAppearance == NO) {
+        _firstAppearance = YES;
+        [self reloadData];
+        [self.imageBrowser scrollIndexToVisible:0];
+    }
 }
 
 - (void) windowWillClose:(NSNotification *)aNotification {
