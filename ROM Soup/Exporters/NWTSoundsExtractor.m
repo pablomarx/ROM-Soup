@@ -29,8 +29,8 @@
   }
   
   newtRef compressionType = NcGetSlot(soundRef, NSSYM(compressionType));
-  if (NewtRefIsNIL(compressionType) == false && NewtRefIsInt30(compressionType) && NewtRefToInt30(compressionType) != 0) {
-    NSLog(@"Unsupported compression type: %i", NewtRefToInt30(compressionType));
+  if (NewtRefIsNIL(compressionType) == false && NewtRefIsInteger(compressionType) && NewtRefToInteger(compressionType) != 0) {
+    NSLog(@"Unsupported compression type: %li", NewtRefToInteger(compressionType));
     return nil;
   }
 

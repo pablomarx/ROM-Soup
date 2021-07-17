@@ -371,7 +371,7 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
 #pragma mark
 - (newtRef) newtRefForVPUM:(uint32_t)vpum {
   if (vpum == 0) {
-    return NewtMakeInt32(0);
+    return NewtMakeInteger(0);
   }
 
   newtRef value = kNewtUnknownType;
@@ -756,7 +756,8 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
 
   NSLog(@"Finished import at 0x%08x! tocEntries=%i, tocObjects=%i, tocFrames=%i, tocSymbols=%i", offset, tocEntries, tocObjects, tocFrames, tocSymbols);
   [self dumpStats];
-  
+#if 0
+    // XXX: Fixme NEWT0/modern does not contain NewtReadPkgWithOffset
   if ([_romPackages count] > 0) {
     for (int i=0; i<[_romPackages count]; i++) {
       NSDictionary *aRomPackage = [_romPackages objectAtIndex:i];
@@ -766,6 +767,7 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
       NcAddArraySlot(packagesRef, result);
     }
   }
+#endif
 }
 
 @end

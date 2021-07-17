@@ -40,7 +40,7 @@
 
 
         newtRef bitdepth = NcGetSlot(colorEntry, NSSYM(bitdepth));
-        if (NewtRefIsInt30(bitdepth)) {
+        if (NewtRefIsInteger(bitdepth)) {
           int thisDepth = NewtRefToInteger(bitdepth);
           if (thisDepth > depth) {
             bits = NcGetSlot(colorEntry, NSSYM(cbits));

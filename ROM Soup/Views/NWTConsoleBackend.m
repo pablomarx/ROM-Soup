@@ -128,8 +128,8 @@
       }
       return result;
     }
-    case kNewtInt30:
-    case kNewtInt32:
+    case kNewtInt62:
+    case kNewtInt64:
       return [[NSNumber numberWithUnsignedInt:NewtRefToInteger(ref)] stringValue];
     case kNewtReal:
       return [[NSNumber numberWithDouble:NewtRefToReal(ref)] stringValue];
@@ -181,8 +181,8 @@
       hasChildren = (NewtLength(ref) > 0);
       type = @"object";
       break;
-    case kNewtInt30:
-    case kNewtInt32:
+    case kNewtInt62:
+    case kNewtInt64:
     case kNewtReal:
       type = @"number";
       break;

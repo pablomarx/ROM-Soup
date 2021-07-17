@@ -37,7 +37,7 @@
   for (int i=0; i<length; i++) {
     newtRef keyRef;
     if (refType == kNewtArray) {
-      keyRef = NewtMakeInt32(i);
+      keyRef = NewtMakeInteger(i);
     }
     else {
       keyRef = NewtGetFrameKey(itemRef, i);
