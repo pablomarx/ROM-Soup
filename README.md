@@ -11,44 +11,38 @@ Need a ROM image? Try:
 - [Newton Notepad 1.0b1](https://archive.org/download/AppleNewtonROMs/Notepad%20v1.0b1.rom)
 - [Original MessagePad 1.3 (414059)](https://archive.org/download/AppleNewtonROMs/MessagePad%20OMP%20v1.3.rom)
 
-Modern Branch
---------
-
-This branch compiles and executes on 64-bit x86_64 and M1.  Sounds, Blobs and Strings tabs appear to function correctly.  The Images tab displays bitmaps fine, however PICT images are not being decoded properly via [NSPICTImageRep](https://github.com/pablomarx/ROM-Soup/blob/cf308d44c76528f8d192c17e53fec2d6b09d73bf/ROM%20Soup/Exporters/NWTPICTExtractor.m#L23).  The console tab crashes when trying to expand the default object. 
-
-<img width="593" alt="Screen Shot 2021-07-17 at 13 13 57" src="https://user-images.githubusercontent.com/179162/126048391-c55ea30e-7a2a-44af-85e6-4100ebbbe836.png">
-
 
 Features
 --------
 
 ### Interactive NEWT/0 Console
 
-![ROM Soup Console Screenshot](http://i.imgur.com/JV9NV4k.png)
+<img width="619" alt="ROM Soup Console Screenshot" src="https://user-images.githubusercontent.com/179162/126057056-523b38d7-c4ba-4621-8daf-bee56bb8155d.png">
 
-- Includes a copy of [Jason Harper's ViewFrame](http://nixietube.info) to decompile NewtonScript functions.  Not all functions decompile yet, as there are some [NEWT/0 bugs](https://github.com/pablomarx/NEWT0-1/commit/50815fb801a3747647b5be4e5cd000c5f63f5c33) preventing ViewFrame from functioning properly.
+- Includes a copy of [Jason Harper's ViewFrame](http://nixietube.info) to decompile NewtonScript functions (**note**: presently disabled in 64-bit builds). Not all functions decompile yet, as there are some [NEWT/0 bugs](https://github.com/pablomarx/NEWT0-1/commit/50815fb801a3747647b5be4e5cd000c5f63f5c33) preventing ViewFrame from functioning properly.
 - Uses WebKit's Inspector for the console.  Yes, JS->ObjC->NewtonScript is strange. But I find this more enjoyable than a basic NSTextView console. 
 
 ### Bitmap + PICT Browser
 
-![ROM Soup Image Browser Screenshot](http://i.imgur.com/4T70gsX.png)
+<img width="619" alt="ROM Soup Image Browser Screenshot" src="https://user-images.githubusercontent.com/179162/126057063-ce44428d-80a2-4ff6-a9b9-decca02a8331.png">
 
 - Right click image(s) to save them as PNG files.
+- Some images may not decode properly in the 64-bit version. 
 
 ### Sound Browser
 
-![ROM Soup Sound Browser Screenshot](http://i.imgur.com/pGO62KQ.png)
+<img width="619" alt="ROM Soup Sound Browser Screenshot" src="https://user-images.githubusercontent.com/179162/126057067-44f1a6d3-ae23-4c01-91b5-d71d1f115019.png">
 
 - Double click or use the enter key to play the sound in the tool.
 - Right click sounds(s) to save them as AIFF files.
 
 ### Blob Browser
 
-![ROM Soup Blob Browser Screenshot](http://i.imgur.com/9vKYhOe.png)
+<img width="509" alt="ROM Soup Blob Browser Screenshot" src="https://user-images.githubusercontent.com/179162/126057077-41648aa9-9cc3-44d2-ac9c-541d78bdbc39.png">
 
 - Double click to view a [HexFiend](http://ridiculousfish.com/hexfiend/) powered hex dump of the blob.
 - Right click blob(s) to export them to disk.
 
 ### Strings Browser
 
-![ROM Soup Strings Browser Screenshot](http://i.imgur.com/I7GlZdR.png)
+<img width="619" alt="ROM Soup Strings Browser Screenshot" src="https://user-images.githubusercontent.com/179162/126057081-ac42191c-f0bb-4289-ada8-a04a5eb0228f.png">
