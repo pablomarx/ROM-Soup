@@ -15,6 +15,8 @@
 #include "NewtObj.h"
 #include "NewtVM.h"
 
+#define USE_DECOMPILER TARGET_CPU_X86
+
 @implementation NWTConsoleBackend
 
 /* This method is called by the WebView when it is deciding what
@@ -194,6 +196,7 @@
       break;
   }
 
+#if USE_DECOMPILER
   if (NewtRefIsFunction(ref) == YES) {
     newtRef decompiler = NcGetSlot(NcGetGlobals(), NSSYM(decompiler));
     if (NewtRefIsNotNIL(decompiler)) {
@@ -208,7 +211,7 @@
       }
     }
   }
-
+#endif
   
   NSDictionary *remoteObject = @{ @"objectId"    : @(ref),
                                   @"hasChildren" : @(hasChildren),
