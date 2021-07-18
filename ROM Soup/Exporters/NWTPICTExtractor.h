@@ -11,8 +11,8 @@
 
 @interface NWTPICTExtractor : NSObject
 
-- (CGImageRef) imageRefForPICT:(newtRef)pictRef
-                         error:(NSError *__autoreleasing *)error;
+- (CGImageRef) newImageRefForPICT:(newtRef)pictRef
+                            error:(NSError *__autoreleasing *)error;
 - (NSData *) pngRepresentationOfPICT:(newtRef)pictRef
                                error:(NSError *__autoreleasing *)error;
 
