@@ -130,9 +130,9 @@
     }
     case kNewtInt62:
     case kNewtInt64:
-      return [[NSNumber numberWithUnsignedInt:NewtRefToInteger(ref)] stringValue];
+      return [@(NewtRefToInteger(ref)) stringValue];
     case kNewtReal:
-      return [[NSNumber numberWithDouble:NewtRefToReal(ref)] stringValue];
+      return [@(NewtRefToReal(ref)) stringValue];
     case kNewtSymbol: {
       newtSymDataRef symbolRef = NewtRefToData(ref);
       return [NSString stringWithFormat:@"'%s", symbolRef->name];
@@ -261,7 +261,7 @@
   for (int i=0; i<length; i++) {
     NSString *name = nil;
     if (refType == kNewtArray) {
-      name = [[NSNumber numberWithInt:i] stringValue];
+      name = [@(i) stringValue];
     }
     else {
       newtRef frameKey = NewtGetFrameKey(itemRef, i);

@@ -20,7 +20,7 @@
                usingBlock:(void (^)(newtRef parentRef, newtRef keyRef, newtRef valueRef, BOOL *stop))block
               visitedRefs:(NSMutableSet *)visitedRefs
 {
-  NSNumber *boxedRef = [NSNumber numberWithUnsignedInteger:itemRef];
+  NSNumber *boxedRef = @(itemRef);
   if ([visitedRefs containsObject:boxedRef] == YES) {
     return YES;
   }
