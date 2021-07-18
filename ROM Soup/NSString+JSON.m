@@ -41,7 +41,7 @@
     NSLog(@"JSONStringWithOptions: returned error:%@", jsonError);
   }
   
-  return [[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding] autorelease];
+  return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
 }
 
 @end
@@ -56,7 +56,7 @@
     NSLog(@"JSONStringWithOptions: returned error:%@", jsonError);
   }
   
-  return [[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding] autorelease];
+  return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
 }
 
 @end

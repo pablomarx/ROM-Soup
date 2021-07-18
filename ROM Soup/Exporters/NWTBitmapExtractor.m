@@ -163,7 +163,6 @@
   
   NSBitmapImageRep *imageRep = [[NSBitmapImageRep alloc] initWithCGImage:imageRef];
   NSData * pngData = [imageRep representationUsingType: NSPNGFileType properties: nil];
-  [imageRep release];
   CGImageRelease(imageRef);
   return pngData;
 }

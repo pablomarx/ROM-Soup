@@ -37,12 +37,6 @@
 
 - (void) dealloc {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  
-  [_images release];
-  [_imageBrowser release];
-  [_romGlobalVarName release];
-  [_imageWindows release];
-  [super dealloc];
 }
 
 - (NSString *) title {
@@ -121,7 +115,6 @@
     item.imageTitle = imageTitle;
     item.imageUID = [aBoxedRef stringValue];
     [_images addObject:item];
-    [item release];
   }
 }
 
@@ -160,7 +153,6 @@
     item.imageUID = [aBoxedRef stringValue];
     item.pict = YES;
     [_images addObject:item];
-    [item release];
   }
 }
 
@@ -190,13 +182,11 @@
       NWTPICTExtractor *extractor = [[NWTPICTExtractor alloc] init];
       imageData = [extractor pngRepresentationOfPICT:[item.imageUID integerValue]
                                                error:nil];
-      [extractor release];
     }
     else {
       NWTBitmapExtractor *extractor = [[NWTBitmapExtractor alloc] init];
       imageData = [extractor pngRepresentationOfBitmap:[item.imageUID integerValue]
                                                  error:nil];
-      [extractor release];
     }
     item.imageRepresentation = imageData;
     item.imageRepresentationType = IKImageBrowserNSDataRepresentationType;
@@ -241,7 +231,6 @@
   if (imageController == nil) {
     imageController = [[NWTImageViewWindowController alloc] initWithImageItem:imageItem];
     [_imageWindows addObject:imageController];
-    [imageController release];
   }
   [imageController showWindow:self];
 }

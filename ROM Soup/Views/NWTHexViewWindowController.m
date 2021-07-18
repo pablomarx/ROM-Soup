@@ -25,13 +25,6 @@
   return self;
 }
 
-- (void) dealloc {
-  [_layoutRep release];
-  [_containerView release];
-  [_inMemoryController release];
-  [super dealloc];
-}
-
 - (NSString *) windowNibName {
   return NSStringFromClass([self class]);
 }
@@ -55,18 +48,18 @@
   [_inMemoryController setBytesPerColumn:4];
    
   /* Put our data in a byte slice. */
-  HFSharedMemoryByteSlice *byteSlice = [[[HFSharedMemoryByteSlice alloc] initWithData:[[blobItem.data mutableCopy] autorelease]] autorelease];
-  HFByteArray *byteArray = [[[HFBTreeByteArray alloc] init] autorelease];
+  HFSharedMemoryByteSlice *byteSlice = [[HFSharedMemoryByteSlice alloc] initWithData:[blobItem.data mutableCopy]];
+  HFByteArray *byteArray = [[HFBTreeByteArray alloc] init];
   [byteArray insertByteSlice:byteSlice inRange:HFRangeMake(0, 0)];
   [_inMemoryController setByteArray:byteArray];
   
   /* Here we're going to make three representers - one for the hex, one for the ASCII, and one for the scrollbar.  To lay these all out properly, we'll use a fourth HFLayoutRepresenter. */
   _layoutRep = [[HFLayoutRepresenter alloc] init];
 
-  HFLineCountingRepresenter *lineRep = [[[HFLineCountingRepresenter alloc] init] autorelease];
-  HFHexTextRepresenter *hexRep = [[[HFHexTextRepresenter alloc] init] autorelease];
-  HFStringEncodingTextRepresenter *asciiRep = [[[HFStringEncodingTextRepresenter alloc] init] autorelease];
-  HFVerticalScrollerRepresenter *scrollRep = [[[HFVerticalScrollerRepresenter alloc] init] autorelease];
+  HFLineCountingRepresenter *lineRep = [[HFLineCountingRepresenter alloc] init];
+  HFHexTextRepresenter *hexRep = [[HFHexTextRepresenter alloc] init];
+  HFStringEncodingTextRepresenter *asciiRep = [[HFStringEncodingTextRepresenter alloc] init];
+  HFVerticalScrollerRepresenter *scrollRep = [[HFVerticalScrollerRepresenter alloc] init];
   
   /* Add all our reps to the controller. */
   [_inMemoryController addRepresenter:lineRep];

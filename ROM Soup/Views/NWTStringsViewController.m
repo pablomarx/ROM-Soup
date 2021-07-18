@@ -25,13 +25,6 @@
   return self;
 }
 
-- (void) dealloc {
-  [_romGlobalVarName release];
-  [_strings release];
-  [_tableView release];
-  [super dealloc];
-}
-
 - (NSString *) title {
   return NSLocalizedString(@"Strings", @"Strings");
 }
@@ -81,7 +74,7 @@
 		}
 	}];
 
-	NSPasteboardItem *anItem = [[[NSPasteboardItem alloc] init] autorelease];
+	NSPasteboardItem *anItem = [[NSPasteboardItem alloc] init];
 	[anItem setString:selectedStrings
 			forType:NSPasteboardTypeString];
 

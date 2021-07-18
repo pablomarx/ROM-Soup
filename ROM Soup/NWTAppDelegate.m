@@ -30,7 +30,6 @@
 - (void) importNTKDefinitions {
   NWTDefsImporter *defsImporter = [[NWTDefsImporter alloc] init];
   [defsImporter importNTKDefsFile:[[NSBundle mainBundle] pathForResource:@"MessagePad Defs" ofType:@""]];
-  [defsImporter release];
 }
 
 - (void) loadViewFrame {

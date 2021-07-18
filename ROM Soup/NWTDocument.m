@@ -31,15 +31,6 @@ static NSString *NWTDocumentViewControllerPrefix = @"viewController-";
   return self;
 }
 
-- (void) dealloc {
-  [_toolbar release];
-  [_viewControllers release];
-  [_romGlobalVarName release];
-  [_contentView release];
-  
-  [super dealloc];
-}
-
 - (NSString *)windowNibName {
   return @"NWTDocument";
 }
@@ -49,23 +40,18 @@ static NSString *NWTDocumentViewControllerPrefix = @"viewController-";
   
   NWTConsoleViewController *consoleController = [[NWTConsoleViewController alloc] init];
   [_viewControllers addObject:consoleController];
-  [consoleController release];
-  
+
   NWTImageBrowserViewController *imagesController = [[NWTImageBrowserViewController alloc] init];
   [_viewControllers addObject:imagesController];
-  [imagesController release];
-  
+
   NWTSoundsViewController *soundsController = [[NWTSoundsViewController alloc] init];
   [_viewControllers addObject:soundsController];
-  [soundsController release];
 
   NWTBlobsViewController *blobsController = [[NWTBlobsViewController alloc] init];
   [_viewControllers addObject:blobsController];
-  [blobsController release];
-  
+
   NWTStringsViewController *stringsController = [[NWTStringsViewController alloc] init];
   [_viewControllers addObject:stringsController];
-  [stringsController release];
 
   for (NSViewController *aViewController in _viewControllers) {
     if ([aViewController respondsToSelector:@selector(setRomGlobalVarName:)]) {
@@ -110,7 +96,7 @@ static NSString *NWTDocumentViewControllerPrefix = @"viewController-";
   
   NSString *romName = [[romFile lastPathComponent] stringByDeletingPathExtension];
   NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"(^\\d*|\\s|\\W)" options:0 error:nil];
-  _romGlobalVarName = [[regex stringByReplacingMatchesInString:romName options:0 range:NSMakeRange(0, [romName length]) withTemplate:@""] retain];
+  _romGlobalVarName = [regex stringByReplacingMatchesInString:romName options:0 range:NSMakeRange(0, [romName length]) withTemplate:@""];
 
   romImporter.romGlobalVarName = _romGlobalVarName;
   BOOL success = NO;
@@ -125,7 +111,6 @@ static NSString *NWTDocumentViewControllerPrefix = @"viewController-";
                     nil,
                     nil);
   }
-  [romImporter release];
 
   return success;
 }
@@ -142,10 +127,9 @@ static NSString *NWTDocumentViewControllerPrefix = @"viewController-";
     if ([_activeViewController.view superview] == contentView) {
       [_activeViewController.view removeFromSuperview];
     }
-    [_activeViewController release];
   }
   
-  _activeViewController = [viewController retain];
+  _activeViewController = viewController;
   
   if (viewController != nil) {
     NSView *view = [viewController view];
@@ -221,7 +205,7 @@ static NSString *NWTDocumentViewControllerPrefix = @"viewController-";
   if ([viewController respondsToSelector:@selector(toolbarImage)]) {
     [item setImage:[viewController toolbarImage]];
   }
-  return [item autorelease];
+  return item;
 }
 
 @end

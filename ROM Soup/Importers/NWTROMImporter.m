@@ -73,7 +73,6 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
     BOOL isValidROM = [self _openFile:romFile
                                 error:error];
     if (isValidROM == NO) {
-      [self release];
       return nil;
     }
     _pointerMap = [[NSMutableDictionary alloc] init];
@@ -89,12 +88,6 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
   if (_romFp != -1) {
     close(_romFp);
   }
-
-  [_romPackages release];
-  [_pointerMap release];
-  [_magicPointers release];
-  [_romGlobalVarName release];
-  [super dealloc];
 }
 
 - (NSArray *) packagesFromRexBlockAtOffset:(uint32_t)offset {
@@ -349,7 +342,7 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
       }
       
       NSLog(@"Found a RExBlock at 0x%08x", offset);
-      _romPackages = [[self packagesFromRexBlockAtOffset:offset] retain];
+      _romPackages = [self packagesFromRexBlockAtOffset:offset];
       break;
     } while (offset < _romSize - needleLength);
     
@@ -515,14 +508,13 @@ NSString * const NWTROMImporterErrorDomain = @"NWTROMImporterErrorDomain";
   
   if (dataType == RECORD_TYPE_DATA) {
     if (header.class == _romStringSymbol) {
-        NSString *unicodeStr = (NSString *)CFStringCreateWithBytes(NULL, cursor, blobSize, kCFStringEncodingUTF16BE, false);
+        NSString *unicodeStr = (__bridge_transfer NSString *)CFStringCreateWithBytes(NULL, cursor, blobSize, kCFStringEncodingUTF16BE, false);
         if (unicodeStr == nil) {
             result = NewtMakeInteger(-1);
             NSLog(@"Failed to make unicode string (first bytes: %x%x%x%x, blobSize: %i, offset: %i)", *cursor, *(cursor + 1), *(cursor + 2), *(cursor + 3), blobSize, offset);
         }
         else {
             result = NewtMakeString([unicodeStr UTF8String], false);
-            CFRelease(unicodeStr);
         }
 
         _stats.strings++;

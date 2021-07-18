@@ -23,12 +23,6 @@
   return self;
 }
 
-- (void) dealloc {
-  [_imageItem release];
-  [_imageView release];
-  [super dealloc];
-}
-
 - (NSString *) windowNibName {
   return NSStringFromClass([self class]);
 }

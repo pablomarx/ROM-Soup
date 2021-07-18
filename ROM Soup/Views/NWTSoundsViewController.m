@@ -29,14 +29,9 @@
 }
 
 - (void) dealloc {
-  [_romGlobalVarName release];
-  [_sounds release];
-  [_tableView release];
   if (_player != nil) {
     [_player stop];
-    [_player release], _player = nil;
   }
-  [super dealloc];
 }
 
 - (NSString *) title {
@@ -93,14 +88,12 @@
   NWTSoundsExtractor *soundExtractor = [[NWTSoundsExtractor alloc] init];
   NSData *aiffData = [soundExtractor aiffDataFromSoundRef:soundRef
                                                     error:nil];
-  [soundExtractor release];
   return aiffData;
 }
 
 - (void) playSoundAtIndex:(NSUInteger)index {
   if (_player != nil) {
     [_player stop];
-    [_player release], _player = nil;
   }
   
   NSDictionary *soundInfo = [self soundInfoAtIndex:index];
@@ -224,7 +217,7 @@
 #pragma mark -
 #pragma mark
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
-  [_player release], _player = nil;
+  _player = nil;
 }
 
 @end

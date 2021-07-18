@@ -14,11 +14,6 @@
 @synthesize webView = _webView;
 @synthesize romGlobalVarName = _romGlobalVarName;
 
-- (void) dealloc {
-  [_webView release];
-  [super dealloc];
-}
-
 - (NSString *) nibName {
   return NSStringFromClass([self class]);
 }
@@ -64,7 +59,6 @@
 - (void)webView:(WebView *)sender didClearWindowObject:(WebScriptObject *)windowObject forFrame:(WebFrame *)frame {
   NWTConsoleBackend *backend = [[NWTConsoleBackend alloc] init];
   [windowObject setValue:backend forKey:@"NWTConsoleBackend"];
-  [backend release];
 }
 
 - (void) webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame {

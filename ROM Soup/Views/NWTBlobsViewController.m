@@ -32,11 +32,6 @@
 
 - (void) dealloc {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [_hexWindows release];
-  [_tableView release];
-  [_romGlobalVarName release];
-  [_blobs release];
-  [super dealloc];
 }
 
 - (NSString *) title {
@@ -95,7 +90,6 @@
        blobItem.itemRef = valueRef;
        blobItem.length = NewtBinaryLength(valueRef);
        [blobData setObject:blobItem forKey:@(valueRef)];
-       [blobItem release];
      }
 
      if (blobItem.className == nil) {
@@ -118,7 +112,7 @@
   NSSortDescriptor *classSortDesc = [NSSortDescriptor sortDescriptorWithKey:@"className"
                                                                   ascending:YES
                                                                    selector:@selector(localizedCaseInsensitiveCompare:)];
-  _blobs = [[[blobData allValues] sortedArrayUsingDescriptors:@[classSortDesc]] retain];
+  _blobs = [[blobData allValues] sortedArrayUsingDescriptors:@[classSortDesc]];
 
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(windowWillClose:)
@@ -169,7 +163,6 @@
   if (windowController == nil) {
     windowController = [[NWTHexViewWindowController alloc] initWithBlobItem:blobItem];
     [_hexWindows addObject:windowController];
-    [windowController release];
   }
   
   [windowController showWindow:self];
@@ -284,12 +277,6 @@
 @synthesize className = _className;
 @synthesize length = _length;
 @dynamic data;
-
-- (void) dealloc {
-  [_className release];
-  [_name release];
-  [super dealloc];
-}
 
 - (NSData *) data {
   NSData *data = [NSData dataWithBytes:NewtRefToData(_itemRef)
